@@ -1,15 +1,26 @@
 import { Request, Response } from 'express';
 
+import Task from '../models/Task';
+
 const getAllTasks = (req: Request, res: Response): void => {
   res.send('all items - controller');
 };
 
-const createTask = (req: Request, res: Response): void => {
-  res.send('create task');
+const createTask = async (req: Request, res: Response): Promise<void> => {
+  const newTask = req.body;
+  if (newTask.completed) {
+    newTask.completed_at = new Date();
+  }
+  try {
+    const task = await Task.create(newTask);
+    res.status(201).json({ task });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
 };
 
 const getTask = (req: Request, res: Response): void => {
-  res.send('get sigle task');
+  res.json({ id: req.params.id });
 };
 
 const updateTask = (req: Request, res: Response): void => {
